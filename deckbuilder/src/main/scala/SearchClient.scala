@@ -60,7 +60,7 @@ object SearchClient {
 
   object Card {
     implicit val decoder: Decoder[Card] =
-      Decoder.forProduct5("id", "title", "set", "imageUrl", "variants")(Card.apply)
+      Decoder.forProduct5("shopifyId", "title", "set", "imageUrl", "variants")(Card.apply)
   }
 
   case class Variant(
