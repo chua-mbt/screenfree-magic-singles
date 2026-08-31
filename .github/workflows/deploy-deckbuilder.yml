@@ -1,0 +1,50 @@
+name: Deploy Deckbuilder to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'deckbuilder/**'
+      - '.github/workflows/deploy-deckbuilder.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: sbt
+
+      - name: Install sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Build Scala.js
+        run: sbt deckbuilder/fullLinkJS
+
+      - name: Prepare Pages Artifact
+        run: |
+          mkdir -p _site
+          cp deckbuilder/index.html _site/
+          cp deckbuilder/target/scala-3.3.3/deckbuilder-opt/main.js _site/
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

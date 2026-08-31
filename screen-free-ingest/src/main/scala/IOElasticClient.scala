@@ -1,9 +1,9 @@
 import cats.effect.*
-import scala.concurrent.{ExecutionContext, Future}
-
 import com.sksamuel.elastic4s.*
 import com.sksamuel.elastic4s.ElasticDsl.*
 import com.sksamuel.elastic4s.http.JavaClient
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class IOElasticClient(client: ElasticClient[Future]) {
   def execute[T, U](request: T)(using Handler[T, U], CommonRequestOptions): IO[Response[U]] =

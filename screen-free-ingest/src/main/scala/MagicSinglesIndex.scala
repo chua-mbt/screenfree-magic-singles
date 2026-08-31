@@ -9,9 +9,6 @@ class MagicSinglesIndex(esClient: IOElasticClient, logger: Logger) {
 
   import MagicSinglesIndex.*
 
-  private val indexName = "magic-singles"
-  private val batchSize = 50
-
   def wipeAndCreate(): IO[Unit] =
     for
       _ <- logger.log(s"Wiping index '$indexName'...")
@@ -37,6 +34,9 @@ class MagicSinglesIndex(esClient: IOElasticClient, logger: Logger) {
 }
 
 object MagicSinglesIndex {
+  private val indexName = "magic-singles"
+  private val batchSize = 50
+
   private val mapping: MappingDefinition = properties(
     textField("shopifyId"),
     textField("title"),

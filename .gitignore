@@ -11,8 +11,9 @@ project/project/
 .DS_Store
 Thumbs.db
 
-# Deckbuilder (WIP)
-deckbuilder/
+# Deckbuilder
+deckbuilder/target/
+deckbuilder/frontend.js
 
 # Generated output
 

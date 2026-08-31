@@ -5,15 +5,12 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.client.Client
+
 import scala.concurrent.duration.*
 
 class ShopifyApi(client: Client[IO], logger: Logger) {
 
   import ShopifyApi.*
-
-  private val baseUrl = "https://screenfreegames.com/collections/magic-singles/products.json"
-  private val pageSize = 250 // https://shopify.dev/docs/api/admin-rest/usage/pagination — max limit is 250
-  private val pageDelay = 1.second
 
   def fetchPage(page: Int): IO[Either[Throwable, ProductPage]] = {
     val uri = Uri.unsafeFromString(s"$baseUrl?limit=$pageSize&page=$page")
@@ -40,6 +37,10 @@ class ShopifyApi(client: Client[IO], logger: Logger) {
 }
 
 object ShopifyApi {
+  private val baseUrl = "https://screenfreegames.com/collections/magic-singles/products.json"
+  private val pageSize = 250 // https://shopify.dev/docs/api/admin-rest/usage/pagination — max limit is 250
+  private val pageDelay = 1.second
+
   def apply(client: Client[IO], logger: Logger): ShopifyApi = new ShopifyApi(client, logger)
 
   case class ProductVariant(
@@ -68,12 +69,7 @@ object ShopifyApi {
     implicit val encoder: Encoder[ProductVariant] = deriveEncoder[ProductVariant]
   }
 
-  case class ProductImage(
-    id: Long,
-    src: String,
-    width: Int,
-    height: Int
-  )
+  case class ProductImage(id: Long, src: String, width: Int, height: Int)
 
   object ProductImage {
     implicit val decoder: Decoder[ProductImage] = deriveDecoder[ProductImage]

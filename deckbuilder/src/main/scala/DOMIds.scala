@@ -1,0 +1,14 @@
+object DOMIds {
+  val App = "app"
+  val Banner = "banner"
+  val Decklist = "decklist"
+  val SearchBtn = "search-btn"
+  val CartBtn = "cart-btn"
+  val Status = "status"
+  val Errors = "errors"
+  val Results = "results"
+  val MissingBox = "missing-box"
+  val MissingList = "missing-list"
+  val CardCount = ".card-count"
+  val DataEntryName = "data-entry-name"
+}
