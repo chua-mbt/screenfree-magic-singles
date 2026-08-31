@@ -9,6 +9,7 @@ object DeckBuilder {
   private type VariantId = String
   private type CardName = String
 
+  private val basicLands = Set("Swamp", "Island", "Mountain", "Plains", "Forest")
   private val proxyUrl = "https://black-lake-1633.chibiakaii.workers.dev/"
   private val cartBaseUrl = "https://screenfreegames.com/cart/"
   private val selectedCards = scala.collection.mutable.Map[VariantId, CardName]()
@@ -29,7 +30,12 @@ object DeckBuilder {
       <div class="top-row">
         <div class="input-col">
           <textarea id="$Decklist" placeholder="Paste deck list here..."></textarea>
-          <button id="$SearchBtn">Search</button>
+          <div class="search-row">
+            <button id="$SearchBtn">Search</button>
+            <label class="filter-label">
+              <input type="checkbox" id="$ExcludeLands" checked> Exclude basic lands
+            </label>
+          </div>
           <div id="$Status"></div>
           <div id="$Errors" class="errors"></div>
         </div>
@@ -69,20 +75,32 @@ object DeckBuilder {
       return
     }
 
-    if (entries.size > 300) {
-      status.textContent = s"Deck too large (${entries.size} cards). Maximum is 300."
+    val excludeLands = document.getElementById(ExcludeLands).asInstanceOf[HTMLInputElement].checked
+    val filteredEntries = if (excludeLands) {
+      entries.filterNot(entry => basicLands.contains(entry.name))
+    } else {
+      entries
+    }
+
+    if (filteredEntries.isEmpty) {
+      status.textContent = "No cards to search for (all basic lands excluded)."
       return
     }
 
-    status.textContent = s"Searching for ${entries.size} cards..."
+    if (filteredEntries.size > 300) {
+      status.textContent = s"Deck too large (${filteredEntries.size} cards). Maximum is 300."
+      return
+    }
+
+    status.textContent = s"Searching for ${filteredEntries.size} cards..."
     results.innerHTML = ""
 
-    searchClient.searchCards(entries).foreach {
+    searchClient.searchCards(filteredEntries).foreach {
       case Right(cards) =>
-        val found = matchEntries(entries, cards)
-        val missing = entries.filterNot(entry => found.exists(_._1.name == entry.name))
-        val distinctFound = entries.size - missing.size
-        status.textContent = s"Found $distinctFound of ${entries.size} cards (${found.size} printings). ${missing.size} missing."
+        val found = matchEntries(filteredEntries, cards)
+        val missing = filteredEntries.filterNot(entry => found.exists(_._1.name == entry.name))
+        val distinctFound = filteredEntries.size - missing.size
+        status.textContent = s"Found $distinctFound of ${filteredEntries.size} cards (${found.size} printings). ${missing.size} missing."
         renderer.renderMissing(missing)
         renderer.renderResults(found, results)
         renderer.updateBanner()

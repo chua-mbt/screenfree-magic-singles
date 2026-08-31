@@ -9,6 +9,7 @@ object DOMIds {
   val Results = "results"
   val MissingBox = "missing-box"
   val MissingList = "missing-list"
+  val ExcludeLands = "exclude-lands"
   val CardCount = ".card-count"
   val DataEntryName = "data-entry-name"
 }
