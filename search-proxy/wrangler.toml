@@ -1,0 +1,5 @@
+name = "black-lake-1633"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]

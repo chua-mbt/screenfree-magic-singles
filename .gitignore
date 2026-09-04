@@ -19,3 +19,6 @@ deckbuilder/frontend.js
 
 # Environment
 .env
+
+# Worker
+search-proxy/node_modules/

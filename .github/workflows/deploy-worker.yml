@@ -1,0 +1,42 @@
+name: Deploy Worker to Cloudflare
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'search-proxy/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: search-proxy/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: search-proxy
+
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: search-proxy
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: search-proxy
+          command: deploy
