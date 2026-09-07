@@ -27,6 +27,7 @@ object DeckBuilder {
         <button id="$CartBtn">Open in Shopify</button>
       </div>
       <h1>Screen Free MTG Search</h1>
+      <p class="about"><a href="https://github.com/chua-mbt/screenfree-magic-singles" target="_blank">About</a></p>
       <div class="top-row">
         <div class="input-col">
           <textarea id="$Decklist" placeholder="Paste deck list here..."></textarea>

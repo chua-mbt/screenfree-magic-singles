@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir -p _site
           cp deckbuilder/index.html _site/
+          cp deckbuilder/styles.css _site/
           cp deckbuilder/target/scala-3.3.3/deckbuilder-opt/main.js _site/
 
       - name: Upload Pages Artifact
