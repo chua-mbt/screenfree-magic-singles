@@ -12,4 +12,6 @@ object DOMIds {
   val ExcludeLands = "exclude-lands"
   val CardCount = ".card-count"
   val DataEntryName = "data-entry-name"
+  val MoxFieldUrl = "moxfield-url"
+  val MoxFieldBtn = "moxfield-btn"
 }

@@ -15,6 +15,7 @@ object DeckBuilder {
   private val selectedCards = scala.collection.mutable.Map[VariantId, CardName]()
   private val searchClient = new SearchClient(proxyUrl)
   private val renderer = new Renderer(selectedCards)
+  private val moxFieldImporter = new MoxFieldImporter()
 
   def main(args: Array[String]): Unit =
     document.addEventListener("DOMContentLoaded", (_: dom.Event) => setup())
@@ -28,9 +29,13 @@ object DeckBuilder {
       </div>
       <h1>Screen Free MTG Search</h1>
       <p class="about"><a href="https://github.com/chua-mbt/screenfree-magic-singles" target="_blank">About</a></p>
+      <div class="moxfield-row">
+        <input type="text" id="$MoxFieldUrl" placeholder="Paste Mox Field URL here...">
+        <button id="$MoxFieldBtn">Import from Mox Field</button>
+      </div>
       <div class="top-row">
         <div class="input-col">
-          <textarea id="$Decklist" placeholder="Paste deck list here..."></textarea>
+          <textarea id="$Decklist" placeholder="Or paste deck list here..."></textarea>
           <div class="search-row">
             <button id="$SearchBtn">Search</button>
             <label class="filter-label">
@@ -38,7 +43,7 @@ object DeckBuilder {
             </label>
           </div>
           <div id="$Status"></div>
-          <div id="$Errors" class="errors"></div>
+          <div id="${DOMIds.Errors}" class="errors"></div>
         </div>
         <div class="missing-col" id="$MissingBox" style="display:none">
           <h3>Missing</h3>
@@ -50,6 +55,17 @@ object DeckBuilder {
 
     document.getElementById(SearchBtn).addEventListener("click", (_: dom.Event) => onSearch())
     document.getElementById(CartBtn).addEventListener("click", (_: dom.Event) => openCart())
+    document.getElementById(MoxFieldBtn).addEventListener("click", (_: dom.Event) => {
+      val urlInput = document.getElementById(MoxFieldUrl).asInstanceOf[HTMLInputElement]
+      val status = document.getElementById(Status)
+      val textarea = document.getElementById(Decklist).asInstanceOf[HTMLTextAreaElement]
+      val url = urlInput.value.trim
+      if (url.isEmpty) {
+        status.textContent = "Please paste a Mox Field URL."
+      } else {
+        moxFieldImporter.importDeck(url, status, textarea)
+      }
+    })
   }
 
   private def onSearch(): Unit = {
@@ -64,7 +80,7 @@ object DeckBuilder {
     }
 
     val (entries, errors) = DeckParser.parseDeckList(input)
-    val errorsDiv = document.getElementById(Errors)
+    val errorsDiv = document.getElementById(DOMIds.Errors)
     if (errors.nonEmpty) {
       errorsDiv.innerHTML = errors.map(error => s"<p>$error</p>").mkString
     } else {
@@ -101,7 +117,7 @@ object DeckBuilder {
         val found = matchEntries(filteredEntries, cards)
         val missing = filteredEntries.filterNot(entry => found.exists(_._1.name == entry.name))
         val distinctFound = filteredEntries.size - missing.size
-        status.textContent = s"Found $distinctFound of ${filteredEntries.size} cards (${found.size} printings). ${missing.size} missing."
+        status.textContent = s"Found $distinctFound of ${filteredEntries.size} distinct cards (${found.size} printings). ${missing.size} missing."
         renderer.renderMissing(missing)
         renderer.renderResults(found, results)
         renderer.updateBanner()

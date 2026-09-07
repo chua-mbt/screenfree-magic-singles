@@ -26,3 +26,7 @@ button { padding: 8px 16px; cursor: pointer; }
 .errors p { margin: 2px 0; }
 .about { font-size: 14px; color: #666; margin-top: -8px; }
 .about a { color: #666; }
+.moxfield-row { display: flex; gap: 8px; margin-bottom: 16px; max-width: calc(50% - 10px); }
+.moxfield-row input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.moxfield-row button { background: #6b46c1; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+.moxfield-row button:hover { background: #553c9a; }
